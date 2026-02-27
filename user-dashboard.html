@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Anon</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .navbar {
+      background: white;
+      padding: 15px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-radius: 8px;
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .nav-center {
+      flex: 1;
+      margin: 0 30px;
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-center input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #667eea;
+    }
+
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      min-width: 200px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 5px;
+    }
+
+    .user-dropdown.active {
+      display: block;
+    }
+
+    .user-dropdown a, .user-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      color: #333;
+      transition: background 0.3s;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .user-dropdown a:hover, .user-dropdown button:hover {
+      background: #f5f5f5;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+    }
+
+    .sidebar {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      height: fit-content;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar-menu a {
+      display: block;
+      padding: 12px 15px;
+      color: #666;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-5px);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      color: #ddd;
+    }
+
+    .product-info {
+      padding: 15px;
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-merchant {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .product-price {
+      color: #667eea;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .product-rating {
+      font-size: 12px;
+      color: #ffc107;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #fa709a;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filters select, .filters input {
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+    }
+
+    .orders-list {
+      margin-top: 20px;
+    }
+
+    .order-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .order-info {
+      flex: 1;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #cfe2ff; color: #084298; }
+    .status-delivered { background: #d1e7dd; color: #0f5132; }
+    .status-cancelled { background: #f8d7da; color: #842029; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+    }
+
+    .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .nav-center {
+        flex-direction: column;
+        margin: 0 10px;
+      }
+
+      .navbar {
+        flex-wrap: wrap;
+      }
+
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="#" class="navbar-brand"><i class="fas fa-shopping-bag"></i> Anon</a>
+    <div class="nav-center">
+      <input type="text" id="searchInput" placeholder="Search products...">
+    </div>
+    <div class="nav-right">
+      <div class="cart-icon" onclick="goToCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </div>
+      <div class="user-menu">
+        <button class="user-btn" onclick="toggleUserMenu()"><i class="fas fa-user-circle"></i></button>
+        <div class="user-dropdown" id="userDropdown">
+          <a href="#" onclick="goToProfile()">My Profile</a>
+          <a href="#" onclick="goToOrders()">My Orders</a>
+          <a href="#" onclick="goToCart()">My Cart</a>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="main-content">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <ul class="sidebar-menu">
+          <li><a href="#" class="active" onclick="showSection('products')">Browse Products</a></li>
+          <li><a href="#" onclick="showSection('orders')">My Orders</a></li>
+          <li><a href="#" onclick="goToCart()">My Cart</a></li>
+          <li><a href="#" onclick="showSection('profile')">My Profile</a></li>
+          <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="content">
+        <!-- Products Section -->
+        <div id="productsSection" class="section">
+          <h2>Browse Products</h2>
+          <div class="filters">
+            <select id="categoryFilter" onchange="filterProducts()">
+              <option value="">All Categories</option>
+              <option value="Clothes">Clothes</option>
+              <option value="Footwear">Footwear</option>
+              <option value="Jewelry">Jewelry</option>
+              <option value="Watches">Watches</option>
+              <option value="Cosmetics">Cosmetics</option>
+            </select>
+            <select id="sortFilter" onchange="filterProducts()">
+              <option value="">Sort By</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="newest">Newest</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
+          <div id="productsLoading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+          </div>
+          <div id="productsList" class="products-grid"></div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="ordersSection" class="section" style="display: none;">
+          <h2>My Orders</h2>
+          <div id="ordersLoading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+          </div>
+          <div id="ordersList" class="orders-list"></div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="section" style="display: none;">
+          <h2>My Profile</h2>
+          <div id="profileContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Details Modal -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeProductModal()">×</button>
+      <div id="productDetails"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    let token = localStorage.getItem('token');
+    let cart = [];
+    let allProducts = [];
+
+    // Check authentication
+    if (!token) {
+      window.location.href = 'landing.html';
+    }
+
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProducts();
+      loadCart();
+      loadUserProfile();
+    });
+
+    async function loadProducts() {
+      try {
+        document.getElementById('productsLoading').style.display = 'block';
+        const response = await fetch(`${API_URL}/products?limit=50`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        allProducts = data.products || [];
+        displayProducts(allProducts);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      } finally {
+        document.getElementById('productsLoading').style.display = 'none';
+      }
+    }
+
+    function displayProducts(products) {
+      const productsList = document.getElementById('productsList');
+      productsList.innerHTML = products.map(product => `
+        <div class="product-card">
+          <div class="product-image"><i class="fas fa-image"></i></div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-merchant">${product.merchant?.businessName || 'Unknown'}</div>
+            <div class="product-price">₹${product.price}</div>
+            <div class="product-rating"><i class="fas fa-star"></i> ${product.rating || 5}</div>
+            <button class="btn btn-primary" onclick="viewProduct('${product._id}')">View</button>
+            <button class="btn btn-primary" onclick="addToCart('${product._id}', '${product.name}', ${product.price})" style="background: #4caf50; margin-top: 5px;">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterProducts() {
+      const category = document.getElementById('categoryFilter').value;
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = allProducts.filter(p => {
+        const matchCategory = !category || p.category === category;
+        const matchSearch = !search || p.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search);
+        return matchCategory && matchSearch;
+      });
+
+      displayProducts(filtered);
+    }
+
+    async function viewProduct(productId) {
+      try {
+        const response = await fetch(`${API_URL}/products/${productId}`);
+        const data = await response.json();
+        const product = data.product;
+        
+        document.getElementById('productDetails').innerHTML = `
+          <h2>${product.name}</h2>
+          <p><strong>Merchant:</strong> ${product.merchant?.businessName}</p>
+          <p><strong>Price:</strong> ₹${product.price}</p>
+          <p><strong>Stock:</strong> ${product.stock} units</p>
+          <p><strong>Description:</strong> ${product.description}</p>
+          <p><strong>Rating:</strong> ${product.rating}/5</p>
+          <button class="btn btn-primary" onclick="addToCart('${product._id}', '${product.name}', ${product.price})">Add to Cart</button>
+        `;
+        document.getElementById('productModal').classList.add('active');
+      } catch (error) {
+        console.error('Error loading product:', error);
+      }
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    function addToCart(productId, name, price) {
+      const item = { productId, name, price, quantity: 1 };
+      const existing = cart.find(c => c.productId === productId);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push(item);
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      alert(`${name} added to cart!`);
+    }
+
+    function loadCart() {
+      const saved = localStorage.getItem('cart');
+      cart = saved ? JSON.parse(saved) : [];
+      updateCartCount();
+    }
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    function goToCart() {
+      window.location.href = 'checkout.html';
+    }
+
+    async function loadUserProfile() {
+      try {
+        const response = await fetch(`${API_URL}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        console.log('User profile:', data.user);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        document.getElementById('ordersLoading').style.display = 'block';
+        const response = await fetch(`${API_URL}/orders/user/my-orders`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const ordersList = document.getElementById('ordersList');
+        
+        if (!data.orders || data.orders.length === 0) {
+          ordersList.innerHTML = '<p>No orders yet</p>';
+        } else {
+          ordersList.innerHTML = data.orders.map(order => `
+            <div class="order-card">
+              <div class="order-info">
+                <p><strong>Order #${order.orderNumber}</strong></p>
+                <p>Total: ₹${order.totalAmount}</p>
+              </div>
+              <div class="order-status status-${order.orderStatus.toLowerCase()}">${order.orderStatus}</div>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      } finally {
+        document.getElementById('ordersLoading').style.display = 'none';
+      }
+    }
+
+    function showSection(section) {
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.getElementById(section + 'Section').style.display = 'block';
+      
+      if (section === 'orders') {
+        loadOrders();
+      }
+    }
+
+    function goToProfile() {
+      showSection('profile');
+    }
+
+    function goToOrders() {
+      showSection('orders');
+    }
+
+    function toggleUserMenu() {
+      document.getElementById('userDropdown').classList.toggle('active');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
+      window.location.href = 'landing.html';
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', filterProducts);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-menu')) {
+        document.getElementById('userDropdown').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

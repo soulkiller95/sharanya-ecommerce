@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Anon Marketplace</title>
+  <link rel="shortcut icon" href="./assets/images/logo/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./assets/css/style-prefix.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    .admin-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .admin-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .stat-label {
+      color: #666;
+      margin-top: 10px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 15px 25px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .data-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th,
+    .table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .table th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    .table tr:hover {
+      background: #f8f9fa;
+    }
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status-active { background: #d4edda; color: #155724; }
+    .status-inactive { background: #f8d7da; color: #721c24; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-verified { background: #cce5ff; color: #004085; }
+    .status-online { background: #d1ecf1; color: #0c5460; }
+    .status-offline { background: #e2e3e5; color: #383d41; }
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      margin: 0 5px;
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #5a67d8;
+    }
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #218838;
+    }
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .pagination button.active {
+      background: #667eea;
+      color: white;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="overlay" data-overlay></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-top">
+      <div class="container">
+        <div class="header-user-actions">
+          <button class="action-btn" onclick="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="header-main">
+      <div class="container">
+        <h1 class="logo">Admin Panel</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="admin-container">
+    <div class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <p>Manage merchants, delivery boys, and overall platform</p>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="total-users">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-merchants">0</div>
+        <div class="stat-label">Total Merchants</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-delivery-boys">0</div>
+        <div class="stat-label">Delivery Boys</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-products">0</div>
+        <div class="stat-label">Total Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-orders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-revenue">$0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('merchants')">Merchants</button>
+      <button class="tab" onclick="showTab('delivery-boys')">Delivery Boys</button>
+      <button class="tab" onclick="showTab('users')">Users</button>
+      <button class="tab" onclick="showTab('products')">Products</button>
+      <button class="tab" onclick="showTab('orders')">Orders</button>
+      <button class="tab" onclick="showTab('analytics')">Analytics</button>
+    </div>
+
+    <!-- Merchants Tab -->
+    <div id="merchants-tab" class="tab-content active">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="merchant-search" placeholder="Search merchants...">
+        <button class="btn btn-primary" onclick="searchMerchants()">Search</button>
+        <button class="btn btn-success" onclick="openAddMerchantModal()">Add Merchant</button>
+      </div>
+      <div class="data-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Business Name</th>
+              <th>Owner Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Business Type</th>
+              <th>Status</th>
+              <th>Verified</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="merchants-tbody">
+            <!-- Merchants will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Delivery Boys Tab -->
+    <div id="delivery-boys-tab" class="tab-content">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="delivery-search" placeholder="Search delivery boys...">
+        <button class="btn btn-primary" onclick="searchDeliveryBoys()">Search</button>
+        <button class="btn btn-success" onclick="openAddDeliveryBoyModal()">Add Delivery Boy</button>
+      </div>
+      <div class="data-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Vehicle Type</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Online</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="delivery-tbody">
+            <!-- Delivery boys will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="users-tab" class="tab-content">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="user-search" placeholder="Search users...">
+        <button class="btn btn-primary" onclick="searchUsers()">Search</button>
+      </div>
+      <div class="data-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Join Date</th>
+              <th>Total Orders</th>
+              <th>Total Spent</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <!-- Users will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="products-tab" class="tab-content">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="product-search" placeholder="Search products...">
+        <button class="btn btn-primary" onclick="searchProducts()">Search</button>
+      </div>
+      <div class="data-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Merchant</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <!-- Products will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="orders-tab" class="tab-content">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="order-search" placeholder="Search orders...">
+        <button class="btn btn-primary" onclick="searchOrders()">Search</button>
+      </div>
+      <div class="data-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Merchant</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <!-- Orders will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div id="analytics-tab" class="tab-content">
+      <div class="data-table">
+        <h2>Platform Analytics</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+          <div class="stat-card">
+            <h3>Top Merchants</h3>
+            <div id="top-merchants"></div>
+          </div>
+          <div class="stat-card">
+            <h3>Top Products</h3>
+            <div id="top-products"></div>
+          </div>
+          <div class="stat-card">
+            <h3>Recent Orders</h3>
+            <div id="recent-orders"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <div id="merchant-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('merchant-modal')">&times;</span>
+      <h2 id="merchant-modal-title">Add/Edit Merchant</h2>
+      <form id="merchant-form">
+        <div class="form-group">
+          <label for="merchant-business-name">Business Name *</label>
+          <input type="text" id="merchant-business-name" required>
+        </div>
+        <div class="form-group">
+          <label for="merchant-owner-name">Owner Name *</label>
+          <input type="text" id="merchant-owner-name" required>
+        </div>
+        <div class="form-group">
+          <label for="merchant-email">Email *</label>
+          <input type="email" id="merchant-email" required>
+        </div>
+        <div class="form-group">
+          <label for="merchant-phone">Phone *</label>
+          <input type="tel" id="merchant-phone" required>
+        </div>
+        <div class="form-group">
+          <label for="merchant-business-type">Business Type *</label>
+          <select id="merchant-business-type" required>
+            <option value="">Select Type</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Food">Food</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Home">Home</option>
+            <option value="Toys">Toys</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="merchant-is-verified">Verified</label>
+          <select id="merchant-is-verified">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="merchant-is-active">Active</label>
+          <select id="merchant-is-active">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Merchant</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="notification-toast" data-toast>
+    <button class="toast-close-btn" data-toast-close>
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="toast-detail">
+      <p class="toast-message" id="toast-message">Notification message</p>
+      <p class="toast-title" id="toast-title">Success</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./assets/js/admin.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

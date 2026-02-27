@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Anon</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .navbar {
+      background: white;
+      padding: 15px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fa709a;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+    }
+
+    .sidebar {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      height: fit-content;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar-menu a {
+      display: block;
+      padding: 12px 15px;
+      color: #666;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      background: #fa709a;
+      color: white;
+    }
+
+    .content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: #fa709a;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #f9527d;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-danger {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .table th {
+      background: #f5f5f5;
+      padding: 12px;
+      text-align: left;
+      border-bottom: 2px solid #ddd;
+      font-weight: 600;
+    }
+
+    .table td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-verified { background: #d1e7dd; color: #0f5132; }
+    .status-unverified { background: #f8d7da; color: #842029; }
+    .status-active { background: #d1e7dd; color: #0f5132; }
+    .status-inactive { background: #f8d7da; color: #842029; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+    }
+
+    .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filters select,
+    .filters input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        flex-direction: column;
+      }
+
+      .filters select,
+      .filters input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-brand"><i class="fas fa-cogs"></i> Admin Dashboard</div>
+    <div>
+      <button class="btn btn-secondary" onclick="logout()" style="background: #ff6b6b; color: white;">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="main-grid">
+      <div class="sidebar">
+        <ul class="sidebar-menu">
+          <li><a class="active" onclick="showSection('dashboard')">Dashboard</a></li>
+          <li><a onclick="showSection('merchants')">Merchants</a></li>
+          <li><a onclick="showSection('delivery-boys')">Delivery Boys</a></li>
+          <li><a onclick="showSection('orders')">Orders</a></li>
+          <li><a onclick="logout()">Logout</a></li>
+        </ul>
+      </div>
+
+      <div class="content">
+        <!-- Dashboard -->
+        <div id="dashboard" class="section active">
+          <h2>Admin Dashboard</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <h3>Total Users</h3>
+              <div class="value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Total Merchants</h3>
+              <div class="value" id="totalMerchants">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Total Delivery Boys</h3>
+              <div class="value" id="totalDeliveryBoys">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Total Orders</h3>
+              <div class="value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Total Revenue</h3>
+              <div class="value" id="totalRevenue">₹0</div>
+            </div>
+            <div class="stat-card">
+              <h3>Verified Merchants</h3>
+              <div class="value" id="verifiedMerchants">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Merchants Management -->
+        <div id="merchants" class="section">
+          <h2>Manage Merchants</h2>
+          <div class="filters">
+            <select id="merchantStatus" onchange="loadMerchants()">
+              <option value="all">All Merchants</option>
+              <option value="verified">Verified</option>
+              <option value="unverified">Unverified</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <input type="text" id="merchantSearch" placeholder="Search merchants..." onkeyup="loadMerchants()">
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Business Name</th>
+                <th>Owner</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="merchantsList"></tbody>
+          </table>
+        </div>
+
+        <!-- Delivery Boys Management -->
+        <div id="delivery-boys" class="section">
+          <h2>Manage Delivery Boys</h2>
+          <div class="filters">
+            <select id="deliveryStatus" onchange="loadDeliveryBoys()">
+              <option value="all">All Delivery Boys</option>
+              <option value="verified">Verified</option>
+              <option value="unverified">Unverified</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <input type="text" id="deliverySearch" placeholder="Search delivery boys..." onkeyup="loadDeliveryBoys()">
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Vehicle</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="deliveryBoysList"></tbody>
+          </table>
+        </div>
+
+        <!-- Orders -->
+        <div id="orders" class="section">
+          <h2>All Orders</h2>
+          <div class="filters">
+            <select id="orderStatus" onchange="loadOrders()">
+              <option value="all">All Orders</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Out for Delivery">Out for Delivery</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="ordersList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    let token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = 'landing.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadDashboard();
+      loadMerchants();
+      loadDeliveryBoys();
+      loadOrders();
+    });
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch(`${API_URL}/admin/stats/dashboard`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success && data.stats) {
+          document.getElementById('totalUsers').textContent = data.stats.totalUsers || 0;
+          document.getElementById('totalMerchants').textContent = data.stats.totalMerchants || 0;
+          document.getElementById('totalDeliveryBoys').textContent = data.stats.totalDeliveryBoys || 0;
+          document.getElementById('totalOrders').textContent = data.stats.totalOrders || 0;
+          document.getElementById('totalRevenue').textContent = '₹' + (data.stats.totalRevenue || 0);
+          document.getElementById('verifiedMerchants').textContent = data.stats.verifiedMerchants || 0;
+        }
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      }
+    }
+
+    async function loadMerchants() {
+      try {
+        const status = document.getElementById('merchantStatus').value;
+        const search = document.getElementById('merchantSearch').value;
+        const response = await fetch(`${API_URL}/admin/merchants?status=${status}&search=${search}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const merchants = data.merchants || [];
+        
+        document.getElementById('merchantsList').innerHTML = merchants.map(m => `
+          <tr>
+            <td>${m.businessName}</td>
+            <td>${m.ownerName}</td>
+            <td>${m.email}</td>
+            <td>${m.businessType}</td>
+            <td>
+              <span class="status-badge status-${m.isVerified ? 'verified' : 'unverified'}">
+                ${m.isVerified ? 'Verified' : 'Unverified'}
+              </span>
+            </td>
+            <td>
+              ${!m.isVerified ? `<button class="btn btn-primary" onclick="approveMerchant('${m._id}')">Approve</button>` : ''}
+              <button class="btn btn-danger" onclick="deactivateMerchant('${m._id}')">Deactivate</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading merchants:', error);
+      }
+    }
+
+    async function loadDeliveryBoys() {
+      try {
+        const status = document.getElementById('deliveryStatus').value;
+        const search = document.getElementById('deliverySearch').value;
+        const response = await fetch(`${API_URL}/admin/delivery-boys?status=${status}&search=${search}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const deliveryBoys = data.deliveryBoys || [];
+        
+        document.getElementById('deliveryBoysList').innerHTML = deliveryBoys.map(d => `
+          <tr>
+            <td>${d.name}</td>
+            <td>${d.email}</td>
+            <td>${d.phone}</td>
+            <td>${d.vehicleType}</td>
+            <td>
+              <span class="status-badge status-${d.isVerified ? 'verified' : 'unverified'}">
+                ${d.isVerified ? 'Verified' : 'Unverified'}
+              </span>
+            </td>
+            <td>
+              ${!d.isVerified ? `<button class="btn btn-primary" onclick="approveDeliveryBoy('${d._id}')">Approve</button>` : ''}
+              <button class="btn btn-danger" onclick="deactivateDeliveryBoy('${d._id}')">Deactivate</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading delivery boys:', error);
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const status = document.getElementById('orderStatus').value;
+        const response = await fetch(`${API_URL}/orders/admin/all?status=${status}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const orders = data.orders || [];
+        
+        document.getElementById('ordersList').innerHTML = orders.map(o => `
+          <tr>
+            <td>${o.orderNumber}</td>
+            <td>${o.customer?.name || 'Unknown'}</td>
+            <td>₹${o.totalAmount}</td>
+            <td>
+              <span class="status-badge status-${o.orderStatus.toLowerCase()}">
+                ${o.orderStatus}
+              </span>
+            </td>
+            <td>${new Date(o.createdAt).toLocaleDateString()}</td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      }
+    }
+
+    async function approveMerchant(merchantId) {
+      try {
+        const response = await fetch(`${API_URL}/admin/merchants/${merchantId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ isVerified: true })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Merchant approved!');
+          loadMerchants();
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function deactivateMerchant(merchantId) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        const response = await fetch(`${API_URL}/admin/merchants/${merchantId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Merchant deactivated!');
+          loadMerchants();
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function approveDeliveryBoy(deliveryId) {
+      try {
+        const response = await fetch(`${API_URL}/admin/delivery-boys/${deliveryId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ isVerified: true })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Delivery boy approved!');
+          loadDeliveryBoys();
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function deactivateDeliveryBoy(deliveryId) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        const response = await fetch(`${API_URL}/admin/delivery-boys/${deliveryId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Delivery boy deactivated!');
+          loadDeliveryBoys();
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').classList.remove('active');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'landing.html';
+    }
+  </script>
+</body>
+</html>

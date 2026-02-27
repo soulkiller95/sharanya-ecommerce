@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Anon Marketplace</title>
+  <link rel="shortcut icon" href="./assets/images/logo/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./assets/css/style-prefix.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 500px;
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-header h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .login-header p {
+      color: #666;
+    }
+    .user-type-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: #f8f9fa;
+      padding: 5px;
+      border-radius: 10px;
+    }
+    .user-type-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .user-type-btn.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background: #5a67d8;
+    }
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .form-footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+    .login-form {
+      display: none;
+    }
+    .login-form.active {
+      display: block;
+    }
+    .back-to-main {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-to-main a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-to-main a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Welcome to Anon Marketplace</h1>
+        <p>Choose your login type to continue</p>
+      </div>
+
+      <!-- User Type Selector -->
+      <div class="user-type-selector">
+        <button class="user-type-btn active" onclick="showLoginForm('customer')">Customer</button>
+        <button class="user-type-btn" onclick="showLoginForm('merchant')">Merchant</button>
+        <button class="user-type-btn" onclick="showLoginForm('delivery')">Delivery Boy</button>
+        <button class="user-type-btn" onclick="showLoginForm('admin')">Admin</button>
+      </div>
+
+      <!-- Customer Login Form -->
+      <div id="customer-form" class="login-form active">
+        <h2>Customer Login</h2>
+        <form onsubmit="handleCustomerLogin(event)">
+          <div class="form-group">
+            <label for="customer-email">Email</label>
+            <input type="email" id="customer-email" required placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label for="customer-password">Password</label>
+            <input type="password" id="customer-password" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="btn">Login as Customer</button>
+        </form>
+        <div class="form-footer">
+          <p>Don't have an account? <a href="#" onclick="showRegisterForm('customer')">Register here</a></p>
+        </div>
+      </div>
+
+      <!-- Merchant Login Form -->
+      <div id="merchant-form" class="login-form">
+        <h2>Merchant Login</h2>
+        <form onsubmit="handleMerchantLogin(event)">
+          <div class="form-group">
+            <label for="merchant-email">Business Email</label>
+            <input type="email" id="merchant-email" required placeholder="Enter your business email">
+          </div>
+          <div class="form-group">
+            <label for="merchant-password">Password</label>
+            <input type="password" id="merchant-password" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="btn">Login as Merchant</button>
+        </form>
+        <div class="form-footer">
+          <p>Don't have an account? <a href="#" onclick="showRegisterForm('merchant')">Register here</a></p>
+        </div>
+      </div>
+
+      <!-- Delivery Boy Login Form -->
+      <div id="delivery-form" class="login-form">
+        <h2>Delivery Boy Login</h2>
+        <form onsubmit="handleDeliveryLogin(event)">
+          <div class="form-group">
+            <label for="delivery-email">Email</label>
+            <input type="email" id="delivery-email" required placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label for="delivery-password">Password</label>
+            <input type="password" id="delivery-password" required placeholder="Enter your password">
+          </div>
+          <button type="submit" class="btn">Login as Delivery Boy</button>
+        </form>
+        <div class="form-footer">
+          <p>Don't have an account? <a href="#" onclick="showRegisterForm('delivery')">Register here</a></p>
+        </div>
+      </div>
+
+      <!-- Admin Login Form -->
+      <div id="admin-form" class="login-form">
+        <h2>Admin Login</h2>
+        <form onsubmit="handleAdminLogin(event)">
+          <div class="form-group">
+            <label for="admin-email">Admin Email</label>
+            <input type="email" id="admin-email" required placeholder="Enter admin email">
+          </div>
+          <div class="form-group">
+            <label for="admin-password">Password</label>
+            <input type="password" id="admin-password" required placeholder="Enter admin password">
+          </div>
+          <button type="submit" class="btn">Login as Admin</button>
+        </form>
+      </div>
+
+      <div class="back-to-main">
+        <a href="index.html">← Back to Main Site</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="notification-toast" data-toast>
+    <button class="toast-close-btn" data-toast-close>
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="toast-detail">
+      <p class="toast-message" id="toast-message">Notification message</p>
+      <p class="toast-title" id="toast-title">Success</p>
+    </div>
+  </div>
+
+  <script src="./assets/js/login-pages.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
