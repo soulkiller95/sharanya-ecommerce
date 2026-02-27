@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'No build needed'",
+  "public": ".",
+  "routes": [
+    {
+      "src": "/landing",
+      "dest": "/landing.html"
+    },
+    {
+      "src": "/merchant",
+      "dest": "/merchant.html"
+    },
+    {
+      "src": "/delivery",
+      "dest": "/delivery.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/checkout",
+      "dest": "/checkout.html"
+    },
+    {
+      "src": "/cart",
+      "dest": "/cart.html"
+    },
+    {
+      "src": "/user-dashboard",
+      "dest": "/user-dashboard.html"
+    },
+    {
+      "src": "/merchant-dashboard",
+      "dest": "/merchant-dashboard.html"
+    },
+    {
+      "src": "/delivery-dashboard",
+      "dest": "/delivery-dashboard.html"
+    },
+    {
+      "src": "/admin-dashboard",
+      "dest": "/admin-dashboard.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/login-pages.html"
+    },
+    {
+      "src": "/(?<path>.*\\..*)",
+      "dest": "/$path"
+    },
+    {
+      "src": "/(?<path>.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
